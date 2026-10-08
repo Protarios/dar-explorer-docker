@@ -1,0 +1,1 @@
+abc ALL=(root) NOPASSWD: /opt/ltfs/bin/ltfs, /opt/ltfs/bin/mkltfs, /opt/stenc/bin/stenc, /usr/bin/mt, /usr/bin/umount

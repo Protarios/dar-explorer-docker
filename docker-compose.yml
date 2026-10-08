@@ -1,0 +1,37 @@
+name: dar-explorer-ltfs
+services:
+  dar-explorer:
+    build:
+      context: .
+      args:
+        LTFS_REF: ${LTFS_REF:-v2.4.9.0-10523}
+        BUILD_JOBS: ${BUILD_JOBS:-4}
+        DAR_VERSION: "2.8.6"
+    image: dar-explorer-selkies:dev
+    container_name: dar-explorer-ltfs
+    restart: unless-stopped
+    shm_size: "1gb"
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    devices:
+      - /dev/fuse:/dev/fuse:rwm
+      - ${TAPE_SG_DEVICE:?Set TAPE_SG_DEVICE}:${TAPE_SG_DEVICE:?Set TAPE_SG_DEVICE}:rwm
+      - ${TAPE_NST_DEVICE:?Set TAPE_NST_DEVICE}:${TAPE_NST_DEVICE:?Set TAPE_NST_DEVICE}:rwm
+      - ${TAPE_ST_DEVICE:?Set TAPE_ST_DEVICE}:${TAPE_ST_DEVICE:?Set TAPE_ST_DEVICE}:rwm
+    environment:
+      PUID: ${PUID:-99}
+      PGID: ${PGID:-100}
+      TZ: ${TZ:-Europe/Berlin}
+      PASSWORD: ${SELKIES_PASSWORD:?Set SELKIES_PASSWORD}
+      CUSTOM_USER: ${SELKIES_USER:-abc}
+    ports:
+      - "${WEB_PORT:-3001}:3001"
+    volumes:
+      - ${CONFIG_DIR:?Set CONFIG_DIR}:/config:rw
+      - ${APP_DIR:-./app}:/workspace/dar-explorer:rw
+      - ${BACKUP_DIR:?Set BACKUP_DIR}:/backup:rw
+      - ${RESTORE_DIR:?Set RESTORE_DIR}:/restore:rw
+    stop_grace_period: 90s

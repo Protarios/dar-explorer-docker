@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd /workspace/dar-explorer
+test -f dar_explorer.py || { echo 'Missing DAR Explorer checkout: ./manage.sh clone-app' >&2; exit 1; }
+exec /usr/bin/python3 /workspace/dar-explorer/dar_explorer.py

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cmd="$(basename -- "$0")"
+case "$cmd" in
+  ltfs) real=/opt/ltfs/bin/ltfs ;;
+  mkltfs) real=/opt/ltfs/bin/mkltfs ;;
+  stenc) real=/opt/stenc/bin/stenc ;;
+  mt) real=/usr/bin/mt ;;
+  fusermount3|fusermount|umount) real=/usr/bin/umount ;;
+  *) echo "Unsupported privileged command: $cmd" >&2; exit 2 ;;
+esac
+if [[ "$cmd" == fusermount3 || "$cmd" == fusermount ]]; then
+  if [[ $# -eq 2 && "$1" == -u ]]; then exec sudo -n /usr/bin/umount -- "$2"; fi
+fi
+if [[ "$cmd" == ltfs ]]; then
+  mount=0
+  for arg in "$@"; do case "$arg" in devname=*|-odevname=*) mount=1 ;; esac; done
+  if (( mount )); then exec sudo -n "$real" "$@" -o "uid=$(id -u),gid=$(id -g),allow_other"; fi
+fi
+exec sudo -n "$real" "$@"
