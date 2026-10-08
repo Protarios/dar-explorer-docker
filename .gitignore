@@ -1,0 +1,5 @@
+.env
+app/
+app-previous/
+*.zip
+__pycache__/
